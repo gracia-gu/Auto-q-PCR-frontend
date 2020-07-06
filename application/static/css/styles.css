@@ -1,0 +1,63 @@
+header {
+    padding: 2em;
+    background-color: #ECEFF1;
+    border-top: 1px solid #BE1121;
+    border-bottom: 1px solid #6f766f;
+    font-family: "CartoGothicStdBold",Helvetica,"Helvetica Neue",Arial,sans serif;
+}
+
+#headerTitle {
+    padding-top: 1.5em;
+}
+
+.container {
+    padding: 0px auto;
+}
+
+#logo {
+    background-color: #ECEFF1;
+}
+
+.row-header {
+	margin: 0px auto;
+	padding: 0px auto;
+}
+
+.row-content {
+	margin: 0px auto;
+	padding: 50px 0px 50px 0px;
+	border-bottom: 1px ridge;
+	min-height: 400px;
+}
+
+.navbar {
+    font-family: "CartoGothicStdBook",Helvetica,"Helvetica Neue",Arial,sans serif;
+    font-weight: normal;
+    padding: 0px;
+}
+
+.navbar-dark {
+	background-color: #444844;
+}
+
+.navbar-header {
+    padding-left: 50px;
+}
+
+.nav-item {
+    margin: 0px;
+    padding: 1px;
+}
+
+.nav-link:hover {
+    background-color: #0C0C0C;
+}
+
+li a.active {
+    background-color: #0C0C0C;
+}
+
+.footer {
+	margin: 0px auto;
+	padding: 20px 0px 20px 0px;
+}
