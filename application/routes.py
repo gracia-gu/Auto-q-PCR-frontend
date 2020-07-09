@@ -23,9 +23,19 @@ def form():
 
 @app.route('/download', methods=["POST"])
 def transform_view():
-	log = logging.basicConfig(filename='app.log', level=logging.INFO)
+	# make log file
+	logger = logging.getLogger()
+	logger.setLevel(logging.INFO)
+	log_stream = io.StringIO()
+	stream_handler = logging.StreamHandler(log_stream)
+	logger.addHandler(stream_handler)
+
+	# get current machine time
+	now = datetime.datetime.now()
+	date_string = now.strftime("%m-%d-%Y")
+
 	try:
-		logging.info('Started')
+		logger.info('Started')
 		files = request.files.getlist('file[]')
 		if len(files) == 0:
 			return "No file"
@@ -66,11 +76,9 @@ def transform_view():
 			data = data.append(filedata, ignore_index=True, sort=True)
 
 		# stream.seek(0)
-		logging.info('Files upload complete.')
-		# log = 'Files upload complete. \n'
+		logger.info('Files upload complete.')
 		genes = request.form['genes']
-		logging.info('Gene names if they are included in file names: ' + genes)
-		# log += 'Gene names if they are included in file names: ' + genes + '\n'
+		logger.info('Gene names if they are included in file names: ' + genes)
 		if genes != '':
 			genes = [genes.strip() for genes in genes.split(',')]
 			data['Target Name'] = data['filename'].str.extract(re.compile('(' + '|'.join(genes) + ')', re.IGNORECASE),
@@ -91,26 +99,19 @@ def transform_view():
 		rm = request.form['option2']
 		nd = request.form['option4']
 
-		logging.info('Model: ' + model + '\nEndogenous control genes: ' + cgenes + '\nCut-off: ' + str(cutoff) + \
+		logger.info('Model: ' + model + '\nEndogenous control genes: ' + cgenes + '\nCut-off: ' + str(cutoff) + \
 			  '\nMaximum Outliers: ' + str(max_outliers) + '\nTarget Order: ' + target_sorter + '\nSample Order: ' + \
 			  sample_sorter + '\nControl Sample: ' + csample + '\nAdditional column names: ' + colnames + \
 			  '\nNumber of groups: ' + str(qty) + '\nGroup column name: ' + gcol + '\nGroup name: ' + glist + \
 			  '\nRepeated measures: ' + rm + '\n' + 'Normal distribution: ' + nd)
-		# log += 'Model: ' + model + '\nEndogenous control genes: ' + cgenes + '\nCut-off: ' + str(cutoff) + \
-		# 	  '\nMaximum Outliers: ' + str(max_outliers) + '\nTarget Order: ' + target_sorter + '\nSample Order: ' + \
-		# 	  sample_sorter + '\nControl Sample: ' + csample + '\nAdditional column names: ' + colnames + \
-		# 	  '\nNumber of groups: ' + str(qty) + '\nGroup column name: ' + gcol + '\nGroup name: ' + glist + \
-		# 	  '\nRepeated measures: ' + rm + '\n' + 'Normal distribution: ' + nd + '\n'
 
 		clean_data, summary_data, targets, samples = AUTOqPCR.process_data(data, model, quencher, task, cgenes, cutoff, max_outliers,
 																	  target_sorter, sample_sorter, csample, colnames)
-		logging.info('Clean data and summary data are created')
-		# log += 'Clean data and summary data are created. \n'
+		logger.info('Clean data and summary data are created')
 
 		plots = plot.plots(summary_data, model, targets, samples)
 		plots2 = plot.plots_wo_controls(summary_data, model, targets, samples, cgenes)
-		logging.info('Plots of the summary data are created.')
-		# log += 'Plots of the summary data are created. \n'
+		logger.info('Plots of the summary data are created.')
 
 		# making stats csv
 		if qty is not None:
@@ -126,13 +127,11 @@ def transform_view():
 			stats_output = stats_dfs.to_csv(index=False)
 			posthoc_output = posthoc_dfs.to_csv(index=False)
 
-			logging.info('Statistics output data are created.')
-			# log += 'Statistics output data are created. \n'
+			logger.info('Statistics output data are created.')
 
 			group_plot = plot.plot_by_groups(clean_data, model, targets, cgenes)
 
-			logging.info('Plots of statistics output are created.')
-			# log += 'Plots of statistics output are created. \n'
+			logger.info('Plots of statistics output are created.')
 
 		# making summary data csv
 		output = summary_data.to_csv()
@@ -172,7 +171,8 @@ def transform_view():
 				buf.close()
 			myzip.writestr('clean_data.csv', clean_output)
 			myzip.writestr('summary_data.csv', output)
-			myzip.writestr('log.txt', log)
+			myzip.writestr('log.txt', log_stream.getvalue())
+			log_stream.flush()
 			# individual plots
 			for i in range(len(plots) - 2):
 				buf = io.BytesIO()
@@ -205,31 +205,16 @@ def transform_view():
 				buf.close()
 				myzip.close()
 
-		# get current machine time
-		now = datetime.datetime.now()
-		date_string = now.strftime("%m-%d-%Y")
-
 		response = make_response(outfile.getvalue())
 		response.headers['Content-Type'] = 'application/actet-stream'
 		response.headers['Content-Disposition'] = 'attachment; filename=outputs_' + model + '_'+ date_string + '.zip'
 		outfile.close()
 	except Exception as e:
-		logging.error('Error occurred' + str(e))
-		# get current machine time
-		now = datetime.datetime.now()
-		date_string = now.strftime("%m-%d-%Y")
-		# outfile = io.BytesIO()
-
-		# with ZipFile(outfile, 'w') as myzip:
-		# 	myzip.writestr('log.txt', log)
-		# 	response = make_response(outfile.getvalue())
-		# 	response.headers['Content-Type'] = 'application/actet-stream'
-		# 	response.headers[
-		# 		'Content-Disposition'] = 'attachment; filename=outputs_' + model + '_' + date_string + '.zip'
-		# 	outfile.close()
-		response = make_response(log)
+		logger.error('Error occurred: ' + str(e))
+		response = make_response(log_stream.getvalue())
 		response.headers['Content-Type'] = 'application/actet-stream'
 		response.headers['Content-Disposition'] = 'attachment; filename=log_' + date_string + '.txt'
+		log_stream.flush()
 
 	return response
 
