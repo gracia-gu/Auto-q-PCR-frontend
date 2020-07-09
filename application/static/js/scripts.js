@@ -11,32 +11,35 @@ document.getElementById("instability").onclick = function() {
 	document.getElementById("csample").setAttribute("required","");
 };
 
+document.getElementById("stats_form").style.display = "none"
+
 document.getElementById("y_stats").onclick = function() {
-	alert("hello")
-	// if ($("y_stats").is(":checked")){
-	// 	$("#stats_form").show();
-	// } else {
-	// 	$("#stats_form").hide();
-	// }
+	document.getElementById("stats_form").style.display = "block";
 };
 
-// $(document).on("click","#y_stats",function(){
-// 	alert("hello")
-// 	if ($("y_stats").is(":checked")){
-// 		$("#stats_form").show();
-// 	} else {
-// 		$("#stats_form").hide();
-// 	}
-// });
+document.getElementById("n_stats").onclick = function() {
+	document.getElementById("quantity").value = "";
+	document.getElementById("opt_gcol").checked = true;
+	document.getElementById("opt_glist").checked = false;
+	document.getElementById("glist").value = "";
+	document.getElementById("gcol").value = "";
+	document.getElementById("y_rm").checked = false;
+	document.getElementById("n_rm").checked = true;
+	document.getElementById("y_nd").checked = true;
+	document.getElementById("n_nd").checked = false;
+	document.getElementById("stats_form").style.display = "none";
+};
 
 document.getElementById("glist").setAttribute("disabled","");
 
 document.getElementById("opt_gcol").onclick = function() {
 	document.getElementById("gcol").removeAttribute("disabled");
 	document.getElementById("glist").setAttribute("disabled","");
+	document.getElementById("glist").value = "";
 };
 
 document.getElementById("opt_glist").onclick = function() {
 	document.getElementById("gcol").setAttribute("disabled","");
+	document.getElementById("gcol").value = "";
 	document.getElementById("glist").removeAttribute("disabled");
 };
