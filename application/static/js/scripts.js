@@ -3,12 +3,26 @@ document.querySelector(".custom-file-input").addEventListener("change",function(
 	$(this).next(".custom-file-label").html(e.target.files.length + " files uploaded");
 });
 
+document.getElementById("csample").setAttribute("disabled", "");
+
+document.getElementById("absolute").onclick = function() {
+	document.getElementById("csample").value = "";
+	document.getElementById("csample").setAttribute("disabled", "");
+};
+
+document.getElementById("relative_dCT").onclick = function() {
+	document.getElementById("csample").value = "";
+	document.getElementById("csample").setAttribute("disabled", "");
+};
+
 document.getElementById("relative_ddCT").onclick = function() {
 	document.getElementById("csample").setAttribute("required","");
+	document.getElementById("csample").removeAttribute("disabled");
 };
 
 document.getElementById("instability").onclick = function() {
 	document.getElementById("csample").setAttribute("required","");
+	document.getElementById("csample").removeAttribute("disabled");
 };
 
 document.getElementById("stats_form").style.display = "none"
