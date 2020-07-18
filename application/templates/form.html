@@ -5,8 +5,17 @@
     <div class="col-12 col-sm-8 offset-sm-2">
         <form>
             <div class="form-group row">
+                <div class="col-12">
+                    <p><b>All inputs are case insensitive. Separate with commas when multiple inputs are required. </b></p>
+                    <div class="footnote">
+                        <p>* fields are required</p>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="form-group row">
                 <div class="col">
-                    <h4>Select model</h4>
+                    <h4 class="required">Select model</h4>
                 </div>
                 <div class="col">
                     <div class="help-tip" id="model-helptip">
@@ -38,7 +47,7 @@
             <hr>
             <div class="form-group row">
                 <div class="col">
-                    <h4>Upload your data (.csv): </h4>
+                    <h4 class="required">Upload your data (.csv): </h4>
                 </div>
                 <div class="col">
                     <div class="help-tip" id="file-helptip">
@@ -59,11 +68,6 @@
             <div class="form-group row">
                 <div class="col">
                     <h4>File information</h4>
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-12">
-                    <p><b>All input boxes are case insensitive. Separate with commas whenever multiple inputs are required. </b></p>
                 </div>
             </div>
             <div class="input-container">
@@ -93,22 +97,22 @@
                 </div>
                 <div class="form-group row">
                     <div class="col-sm-8">
-                        <input type="text" class="form-control" id="quencher" name="quencher" placeholder="Quencher" autocomplete="off" required>
+                        <input type="text" class="form-control" id="quencher" name="quencher" placeholder="Quencher" autocomplete="off">
                     </div>
                 </div>
             </div>
             <div class="input-container">
                 <div class="form-group row mb-0">
-                    <label for="task" class="col col-form-label">Name of your sample group in your task column: </label>
+                    <label for="task" class="col col-form-label required">Name of your sample group in your task column: </label>
                     <div class="col">
                         <div class="help-tip">
-                            <p>Something</p>
+                            <p>Default: UNKNOWN</p>
                         </div>
                     </div>
                 </div>
                 <div class="form-group row">
                     <div class="col-sm-8">
-                        <input type="text" class="form-control" id="task" name="task" placeholder="Task" autocomplete="off" required>
+                        <input type="text" class="form-control" id="task" name="task" placeholder="Task" value="UNKNOWN" autocomplete="off" required>
                     </div>
                 </div>
             </div>
@@ -118,14 +122,9 @@
                     <h4>Options</h4>
                 </div>
             </div>
-            <div class="form-group row">
-                <div class="col-12">
-                    <p><b>All input boxes are case insensitive. Separate with commas whenever multiple inputs are required. </b></p>
-                </div>
-            </div>
             <div class="input-container">
                 <div class="form-group row mb-0">
-                    <label for="cgenes" class="col col-form-label">Enter target(s) for normalization (endogenous control gene(s)/chromosome(s)): </label>
+                    <label for="cgenes" class="col col-form-label required">Enter target(s) for normalization (endogenous control gene(s)/chromosome(s)): </label>
                     <div class="col">
                         <div class="help-tip">
                             <p>Gene or region to to normalize with (Actin, GAPDH, CHR4, B2M).
@@ -134,7 +133,7 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <div class="col-sm-8">
+                    <div class="col-sm-10">
                         <input type="text" class="form-control" id="cgenes" name="cgenes" placeholder="Endogeneous control" autocomplete="off" required>
                     </div>
                 </div>
@@ -150,7 +149,7 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <div class="col-sm-8">
+                    <div class="col-sm-10">
                         <input type="number" class="form-control" id="cutoff" name="cutoff" value="0.3" placeholder="Cut-off" autocomplete="off">
                     </div>
                 </div>
@@ -166,14 +165,14 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <div class="col-sm-8">
+                    <div class="col-sm-10">
                         <input type="number" class="form-control" id="max_outliers" name="max_outliers" value="0.5" min="0" max="1" placeholder="Max outliers" autocomplete="off">
                     </div>
                 </div>
             </div>
             <div class="input-container">
                 <div class="form-group row mb-0">
-                    <label for="csample" class="col col-form-label">Enter the control sample (calibrator/reference sample): </label>
+                    <label for="csample" class="col col-form-label">Enter the control sample (calibrator/reference sample): <span id="specialStar" style="color: #FF0000">*</span></label>
                     <div class="col">
                         <div class="help-tip">
                             <p> The sample used as calibrator (compare with this sample) for the relative (delta delta CT)
@@ -182,7 +181,7 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <div class="col-sm-8">
+                    <div class="col-sm-10">
                         <input type="text" class="form-control" id="csample" name="csample" placeholder="Control sample" autocomplete="off">
                     </div>
                 </div>
@@ -346,7 +345,7 @@
             <hr>
             <div class="form-group row">
                 <div class="col-12">
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" id="submit" class="btn btn-primary">Submit</button>
                 </div>
             </div>
         </form>

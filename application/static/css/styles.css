@@ -166,3 +166,22 @@ p {
 .btn-primary:hover {
     background-color: #470A68;
 }
+
+form label.required:after {
+    color: #FF0000;
+    content: " *";
+}
+
+form h4.required:after {
+    color: #FF0000;
+    content: " *";
+}
+
+.footnote p{
+    color: #FF0000;
+    font-size: 90%;
+}
+
+h3 {
+    margin-bottom: 1.2rem;
+}

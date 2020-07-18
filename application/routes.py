@@ -1,6 +1,7 @@
-from application import app
+from application import app, mail
 import logging
-from flask import render_template, request, make_response, redirect, flash
+from flask import render_template, request, make_response, flash
+from flask_mail import Message
 import io
 import pandas as pd
 from application import AUTOqPCR, plot, statistics, rx_rename
@@ -21,7 +22,7 @@ def form():
 	return render_template('form.html', form=True)
 
 
-@app.route('/download', methods=["POST"])
+@app.route('/form', methods=["POST"])
 def transform_view():
 	# make log file
 	logger = logging.getLogger()
@@ -228,6 +229,18 @@ def user_guide():
 	return render_template('help.html', user_guide=True)
 
 
-@app.route('/contact')
+@app.route('/contact', methods=['GET', 'POST'])
 def contact():
-	return render_template('contact.html', contact=True)
+	if request.method == 'POST':
+		name = request.form['name']
+		email = request.form['emailid']
+		subject = request.form['issue']
+		message = request.form['feedback']
+		body = 'Message from '+name+'\n'+message
+
+		msg = Message(subject=subject, sender=email, cc=[email], recipients=["autoqpcr@gmail.com"], reply_to=email, body=body)
+		mail.send(msg)
+		return render_template('contact.html', contact=True)
+
+	elif request.method == 'GET':
+		return render_template('contact.html', contact=True)

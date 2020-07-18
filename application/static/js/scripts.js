@@ -5,27 +5,33 @@ document.querySelector(".custom-file-input").addEventListener("change",function(
 
 document.getElementById("csample").setAttribute("disabled", "");
 
+document.getElementById("specialStar").style.display = "none";
+
 document.getElementById("absolute").onclick = function() {
 	document.getElementById("csample").value = "";
 	document.getElementById("csample").setAttribute("disabled", "");
+	document.getElementById("specialStar").style.display = "none";
 };
 
 document.getElementById("relative_dCT").onclick = function() {
 	document.getElementById("csample").value = "";
 	document.getElementById("csample").setAttribute("disabled", "");
+	document.getElementById("specialStar").style.display = "none";
 };
 
 document.getElementById("relative_ddCT").onclick = function() {
 	document.getElementById("csample").setAttribute("required","");
 	document.getElementById("csample").removeAttribute("disabled");
+	document.getElementById("specialStar").style.display = "inline-block";
 };
 
 document.getElementById("instability").onclick = function() {
 	document.getElementById("csample").setAttribute("required","");
 	document.getElementById("csample").removeAttribute("disabled");
+	document.getElementById("specialStar").style.display = "inline-block";
 };
 
-document.getElementById("stats_form").style.display = "none"
+document.getElementById("stats_form").style.display = "none";
 
 document.getElementById("y_stats").onclick = function() {
 	document.getElementById("stats_form").style.display = "block";
@@ -56,4 +62,10 @@ document.getElementById("opt_glist").onclick = function() {
 	document.getElementById("gcol").setAttribute("disabled","");
 	document.getElementById("gcol").value = "";
 	document.getElementById("glist").removeAttribute("disabled");
+};
+
+document.getElementById("submit").onclick = function() {
+	setTimeout(function() {
+		location.reload();
+		}, 60000);
 };
