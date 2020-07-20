@@ -1,6 +1,6 @@
 // Add the following code if you want the name of the file appear on select
 document.querySelector(".custom-file-input").addEventListener("change",function(e){
-	$(this).next(".custom-file-label").html(e.target.files.length + " files uploaded");
+	$(this).next(".custom-file-label").html(e.target.files.length + " file(s) uploaded");
 });
 
 document.getElementById("csample").setAttribute("disabled", "");

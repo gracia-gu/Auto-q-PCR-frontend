@@ -12,6 +12,14 @@ header {
     width: 214px;
 }
 
+h1 {
+    color: #470A68;
+}
+
+h2 {
+    color: #470A68;
+}
+
 .row-header {
     margin: 0px auto;
     padding: 0px auto;

@@ -1,13 +1,13 @@
-from application import app, mail
 import logging
 from flask import render_template, request, make_response, flash
 from flask_mail import Message
 import io
 import pandas as pd
-from application import AUTOqPCR, plot, statistics, rx_rename
+from application import *
 import datetime
 from zipfile import ZipFile
 import re
+from application import regex_rename, AUTOqPCR, statistics, plot
 
 
 @app.route('/')
@@ -73,7 +73,7 @@ def transform_view():
 
 			# print(filedata)
 			filedata['filename'] = item.filename
-			filedata.rename(columns=rx_rename, inplace=True)
+			filedata.rename(columns=regex_rename.rx_rename, inplace=True)
 			data = data.append(filedata, ignore_index=True, sort=True)
 
 		# stream.seek(0)
@@ -83,31 +83,42 @@ def transform_view():
 		if genes != '':
 			genes = [genes.strip() for genes in genes.split(',')]
 			data['Target Name'] = data['filename'].str.extract(re.compile('(' + '|'.join(genes) + ')', re.IGNORECASE),
-															expand=False).fillna('')
+															   expand=False).fillna('')
 		model = request.form['option']
 		quencher = request.form['quencher']
 		task = request.form['task']
 		cgenes = request.form['cgenes']
 		cutoff = request.form.get('cutoff', type=float)
 		max_outliers = request.form.get('max_outliers', type=float)
-		target_sorter = request.form['target_sorter']
-		sample_sorter = request.form['sample_sorter']
-		csample = request.form['csample']
+		target_sorter = request.form['target_order']
+		sample_sorter = request.form['sample_order']
+		if model == 'relative_ddCT':
+			csample = request.form['csample']
+		elif model == 'instability':
+			csample = request.form['csample']
+		else:
+			csample = ''
 		colnames = request.form['colnames']
 		qty = request.form.get('quantity', type=int)
-		gcol = request.form['gcol']
-		glist = request.form['glist']
+		opt_g = request.form['option3']
+		if opt_g == 'True':
+			gcol = request.form['gcol']
+			glist = ''
+		else:
+			glist = request.form['glist']
+			gcol = ''
 		rm = request.form['option2']
 		nd = request.form['option4']
 
 		logger.info('Model: ' + model + '\nEndogenous control genes: ' + cgenes + '\nCut-off: ' + str(cutoff) + \
-			  '\nMaximum Outliers: ' + str(max_outliers) + '\nTarget Order: ' + target_sorter + '\nSample Order: ' + \
-			  sample_sorter + '\nControl Sample: ' + csample + '\nAdditional column names: ' + colnames + \
-			  '\nNumber of groups: ' + str(qty) + '\nGroup column name: ' + gcol + '\nGroup name: ' + glist + \
-			  '\nRepeated measures: ' + rm + '\n' + 'Normal distribution: ' + nd)
+					'\nMaximum Outliers: ' + str(max_outliers) + '\nTarget Order: ' + target_sorter + '\nSample Order: ' + \
+					sample_sorter + '\nControl Sample: ' + csample + '\nAdditional column names: ' + colnames + \
+					'\nNumber of groups: ' + str(qty) + '\nGroup column name: ' + gcol + '\nGroup name: ' + glist + \
+					'\nRepeated measures: ' + rm + '\n' + 'Normal distribution: ' + nd)
 
-		clean_data, summary_data, targets, samples = AUTOqPCR.process_data(data, model, quencher, task, cgenes, cutoff, max_outliers,
-																	  target_sorter, sample_sorter, csample, colnames)
+		clean_data, summary_data, targets, samples = AUTOqPCR.process_data(data, model, quencher, task, cgenes, cutoff,
+																		   max_outliers,
+																		   target_sorter, sample_sorter, csample, colnames)
 		logger.info('Clean data and summary data are created')
 
 		plots = plot.plots(summary_data, model, targets, samples)
@@ -208,7 +219,7 @@ def transform_view():
 
 		response = make_response(outfile.getvalue())
 		response.headers['Content-Type'] = 'application/actet-stream'
-		response.headers['Content-Disposition'] = 'attachment; filename=outputs_' + model + '_'+ date_string + '.zip'
+		response.headers['Content-Disposition'] = 'attachment; filename=outputs_' + model + '_' + date_string + '.zip'
 		outfile.close()
 		# alert
 		flash('Your data has been processed successfully!', 'success')
