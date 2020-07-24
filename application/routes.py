@@ -73,13 +73,15 @@ def transform_view():
 
 			# print(filedata)
 			filedata['filename'] = item.filename
-			filedata.rename(columns=regex_rename.rx_rename, inplace=True)
+			filedata.rename(columns=rx_rename, inplace=True)
 			data = data.append(filedata, ignore_index=True, sort=True)
 
 		# stream.seek(0)
 		logger.info('Files upload complete.')
+
 		genes = request.form['genes']
 		logger.info('Gene names if they are included in file names: ' + genes)
+
 		if genes != '':
 			genes = [genes.strip() for genes in genes.split(',')]
 			data['Target Name'] = data['filename'].str.extract(re.compile('(' + '|'.join(genes) + ')', re.IGNORECASE),
@@ -90,23 +92,20 @@ def transform_view():
 		cgenes = request.form['cgenes']
 		cutoff = request.form.get('cutoff', type=float)
 		max_outliers = request.form.get('max_outliers', type=float)
-		target_sorter = request.form['target_order']
-		sample_sorter = request.form['sample_order']
-		if model == 'relative_ddCT':
-			csample = request.form['csample']
-		elif model == 'instability':
-			csample = request.form['csample']
-		else:
-			csample = ''
+		target_sorter = request.form['target_sorter']
+		sample_sorter = request.form['sample_sorter']
+		csample = request.form['csample']
 		colnames = request.form['colnames']
 		qty = request.form.get('quantity', type=int)
-		opt_g = request.form['option3']
-		if opt_g == 'True':
-			gcol = request.form['gcol']
-			glist = ''
-		else:
-			glist = request.form['glist']
-			gcol = ''
+		tw = request.form['twoway']
+		gcol = request.form['gcol']
+		glist = request.form['glist']
+		gcol1 = request.form['gcol1']
+		gcol2 = request.form['gcol2']
+		colname1 = request.form['colname1']
+		colname2 = request.form['colname2']
+		glist1 = request.form['glist1']
+		glist2 = request.form['glist2']
 		rm = request.form['option2']
 		nd = request.form['option4']
 
@@ -116,38 +115,56 @@ def transform_view():
 					'\nNumber of groups: ' + str(qty) + '\nGroup column name: ' + gcol + '\nGroup name: ' + glist + \
 					'\nRepeated measures: ' + rm + '\n' + 'Normal distribution: ' + nd)
 
-		clean_data, summary_data, targets, samples = AUTOqPCR.process_data(data, model, quencher, task, cgenes, cutoff,
-																		   max_outliers,
-																		   target_sorter, sample_sorter, csample, colnames)
+		clean_data, summary_data, summary_data_w_group, targets, samples = AUTOqPCR.process_data(data, model, quencher,
+																								 task, cgenes, cutoff,
+																								 max_outliers,
+																								 target_sorter,
+																								 sample_sorter, csample,
+																								 colnames)
+		# making summary data csv
+		output = summary_data.to_csv()
+		output_w_group = summary_data_w_group.to_csv()
+		clean_output = clean_data.to_csv()
+
 		logger.info('Clean data and summary data are created')
 
 		plots = plot.plots(summary_data, model, targets, samples)
 		plots2 = plot.plots_wo_controls(summary_data, model, targets, samples, cgenes)
+
 		logger.info('Plots of the summary data are created.')
 
 		# making stats csv
 		if qty is not None:
-			if request.form['option3'] != 'False':
-				if gcol.lower() in clean_data.columns.str.lower():
-					col = gcol
-				clean_data['Group'] = clean_data[col]
+			if tw == 'False':
+				if request.form['option3'] != 'False':
+					if gcol.lower() in clean_data.columns.str.lower():
+						col = gcol
+					clean_data['Group'] = clean_data[col]
+				else:
+					groups = glist.split(',')
+					clean_data = statistics.add_groups(clean_data, tw, groups)
 			else:
-				groups = glist.split(',')
-				clean_data = statistics.add_groups(clean_data, groups)
+				if request.form['option3'] != 'False':
+					if gcol1.lower() in clean_data.columns.str.lower():
+						col = gcol1
+					clean_data['Group1'] = clean_data[col]
+					if gcol2.lower() in clean_data.columns.str.lower():
+						col = gcol2
+					clean_data['Group2'] = clean_data[col]
+				else:
+					groups1 = glist1.split(',')
+					groups2 = glist2.split(',')
+					clean_data = statistics.add_groups(clean_data, tw, groups1, groups2, colname1, colname2)
 
-			stats_dfs, posthoc_dfs = statistics.stats(model, qty, clean_data, targets, rm, nd)
+			stats_dfs, posthoc_dfs = statistics.stats(model, qty, clean_data, targets, tw, rm, nd)
 			stats_output = stats_dfs.to_csv(index=False)
 			posthoc_output = posthoc_dfs.to_csv(index=False)
 
 			logger.info('Statistics output data are created.')
 
-			group_plot = plot.plot_by_groups(clean_data, model, targets, cgenes)
+			group_plot = plot.plot_by_groups(clean_data, model, targets, cgenes, tw)
 
 			logger.info('Plots of statistics output are created.')
-
-		# making summary data csv
-		output = summary_data.to_csv()
-		clean_output = clean_data.to_csv()
 
 		outfile = io.BytesIO()
 		with ZipFile(outfile, 'w') as myzip:
@@ -170,19 +187,27 @@ def transform_view():
 						else:
 							myzip.writestr('KruskalWallisTest_result.csv', stats_output)
 						myzip.writestr('Posthoc_result.csv', posthoc_output)
-
-				buf = io.BytesIO()
-				group_plot[0].savefig(buf)
-				image_name = 'Plot_by_groups.png'
-				myzip.writestr(image_name, buf.getvalue())
-				buf.close()
-				buf = io.BytesIO()
-				group_plot[1].savefig(buf)
-				image_name2 = 'Plot_by_targets.png'
-				myzip.writestr(image_name2, buf.getvalue())
-				buf.close()
+				# output grouped plots
+				if len(group_plot) == 2:
+					buf = io.BytesIO()
+					group_plot[0].savefig(buf)
+					image_name = 'Plot_by_groups.png'
+					myzip.writestr(image_name, buf.getvalue())
+					buf.close()
+					buf = io.BytesIO()
+					group_plot[1].savefig(buf)
+					image_name2 = 'Plot_by_targets.png'
+					myzip.writestr(image_name2, buf.getvalue())
+					buf.close()
+				else:
+					buf = io.BytesIO()
+					group_plot[0].savefig(buf)
+					image_name = 'Group1_vs_Group2.png'
+					myzip.writestr(image_name, buf.getvalue())
+					buf.close()
 			myzip.writestr('clean_data.csv', clean_output)
 			myzip.writestr('summary_data.csv', output)
+			myzip.writestr('summary_data_w_groups.csv', output_w_group)
 			myzip.writestr('log.txt', log_stream.getvalue())
 			log_stream.flush()
 			# individual plots
@@ -218,7 +243,7 @@ def transform_view():
 				myzip.close()
 
 		response = make_response(outfile.getvalue())
-		response.headers['Content-Type'] = 'application/actet-stream'
+		response.headers['Content-Type'] = 'application/zip'
 		response.headers['Content-Disposition'] = 'attachment; filename=outputs_' + model + '_' + date_string + '.zip'
 		outfile.close()
 		# alert
@@ -226,8 +251,8 @@ def transform_view():
 	except Exception as e:
 		logger.error('Error occurred: ' + str(e))
 		response = make_response(log_stream.getvalue())
-		response.headers['Content-Type'] = 'application/actet-stream'
-		response.headers['Content-Disposition'] = 'attachment; filename=log_' + date_string + '.txt'
+		response.headers['Content-Type'] = 'text/plain'
+		response.headers['Content-Disposition'] = 'attachment; filename=log_'+date_string+'.txt'
 		log_stream.flush()
 		# alert
 		flash('Sorry, something went wrong. Please check log.txt file.', 'danger')

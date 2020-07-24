@@ -3,6 +3,7 @@ document.querySelector(".custom-file-input").addEventListener("change",function(
 	$(this).next(".custom-file-label").html(e.target.files.length + " file(s) uploaded");
 });
 
+// CSample is only enabled and required when relative ddCT or instability is selected
 document.getElementById("csample").setAttribute("disabled", "");
 
 document.getElementById("specialStar").style.display = "none";
@@ -31,6 +32,7 @@ document.getElementById("instability").onclick = function() {
 	document.getElementById("specialStar").style.display = "inline-block";
 };
 
+// display or hide stats form
 document.getElementById("stats_form").style.display = "none";
 
 document.getElementById("y_stats").onclick = function() {
@@ -50,6 +52,29 @@ document.getElementById("n_stats").onclick = function() {
 	document.getElementById("stats_form").style.display = "none";
 };
 
+// display or hide one-way or two-way ANOVA
+document.getElementById("form-twoway").style.display = "none";
+document.getElementById("opt_gcol").setAttribute("checked","");
+
+document.getElementById("twoway").onclick = function() {
+	document.getElementById("opt_gcol").checked = false;
+	document.getElementById("opt_glist").checked = false;
+	document.getElementById("tw_glist").checked = false;
+	document.getElementById("tw_gcol").checked = true;
+	document.getElementById("form-oneway").style.display = "none";
+	document.getElementById("form-twoway").style.display = "block";
+};
+
+document.getElementById("oneway").onclick = function() {
+	document.getElementById("tw_gcol").checked = false;
+	document.getElementById("opt_glist").checked = false;
+	document.getElementById("tw_glist").checked = false;
+	document.getElementById("opt_gcol").checked = true;
+	document.getElementById("form-oneway").style.display = "block";
+	document.getElementById("form-twoway").style.display = "none";
+};
+
+// One-way ANOVA: disable group column or group list when the other option is selected
 document.getElementById("glist").setAttribute("disabled","");
 
 document.getElementById("opt_gcol").onclick = function() {
@@ -64,6 +89,37 @@ document.getElementById("opt_glist").onclick = function() {
 	document.getElementById("glist").removeAttribute("disabled");
 };
 
+// Two-way ANOVA: disable group column or group list when the other option is selected
+document.getElementById("colname1").setAttribute("disabled","");
+document.getElementById("colname2").setAttribute("disabled","");
+document.getElementById("glist1").setAttribute("disabled","");
+document.getElementById("glist2").setAttribute("disabled","");
+
+document.getElementById("tw_gcol").onclick = function() {
+	document.getElementById("gcol1").removeAttribute("disabled");
+	document.getElementById("gcol2").removeAttribute("disabled");
+	document.getElementById("colname1").setAttribute("disabled","");
+	document.getElementById("colname1").value = "";
+	document.getElementById("colname2").setAttribute("disabled","");
+	document.getElementById("colname2").value = "";
+	document.getElementById("glist1").setAttribute("disabled","");
+	document.getElementById("glist1").value = "";
+	document.getElementById("glist2").setAttribute("disabled","");
+	document.getElementById("glist2").value = "";
+};
+
+document.getElementById("tw_glist").onclick = function() {
+	document.getElementById("gcol1").setAttribute("disabled","");
+	document.getElementById("gcol1").value = "";
+	document.getElementById("gcol2").setAttribute("disabled","");
+	document.getElementById("gcol2").value = "";
+	document.getElementById("colname1").removeAttribute("disabled");
+	document.getElementById("colname2").removeAttribute("disabled");
+	document.getElementById("glist1").removeAttribute("disabled");
+	document.getElementById("glist2").removeAttribute("disabled");
+};
+
+// Set automatic reload time to 60s after submitting the form
 document.getElementById("submit").onclick = function() {
 	setTimeout(function() {
 		location.reload();
