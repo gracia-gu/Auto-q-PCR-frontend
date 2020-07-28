@@ -209,6 +209,10 @@ def stats(model, quantity, data, targets, tw, rm, nd):
 			stats_dfs['MS'] = ['NA'] * len(targets)
 			stats_dfs['SS'] = ['NA'] * len(targets)
 			stats_dfs['effect size'] = ['NA'] * len(targets)
+			if tw == 'False':
+				posthoc_dfs = posthoc_dfs.drop(['Contrast', 'T'], axis=1)
+			else:
+				posthoc_dfs = posthoc_dfs.drop(['T'], axis=1)
 			cols = ['Target Name', 'DF', 'MS', 'SS', 'p-value', 'p-value corrected', 'measures', 'distribution',
 					'test', 'statistic', 'effect size']
 			stats_dfs = stats_dfs.reindex(columns=cols)
@@ -216,8 +220,13 @@ def stats(model, quantity, data, targets, tw, rm, nd):
 			posthoc_dfs = posthoc_dfs.drop(['Contrast'], axis=1)
 			posthoc_dfs = posthoc_dfs.rename(columns={'hedges': 'effect size', 'p-corr': 'p-value corrected', 'p-unc': 'p-value',
 								'p-adjust': 'correction method', 'BF10': 'Bayes factor'})
-			cols2 = ['Target Name', 'A', 'B', 'DF', 'p-value corrected', 'p-value', 'correction method', 'Paired',
+			if tw == 'False':
+				cols2 = ['Target Name', 'A', 'B', 'DF', 'p-value corrected', 'p-value', 'correction method', 'Paired',
 					 'Parametric', 'Test', 'effect size', 'Bayes factor']
+			else:
+				cols2 = ['Target Name', 'Contrast', 'Group1', 'A', 'B', 'DF', 'p-value corrected', 'p-value',
+						 'correction method', 'Paired',
+						 'Parametric', 'Test', 'effect size', 'Bayes factor']
 			posthoc_dfs = posthoc_dfs.reindex(columns=cols2)
 
 	return stats_dfs, posthoc_dfs
