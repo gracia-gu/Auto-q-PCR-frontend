@@ -128,7 +128,7 @@ pep8==1.7.1
 pexpect==4.6.0
 pickleshare==0.7.5
 Pillow==5.4.1
-pingouin==0.3.6
+pingouin==0.3.7
 pkginfo==1.5.0.1
 pluggy==0.9.0
 ply==3.11
@@ -148,6 +148,7 @@ pylint==2.3.1
 pyodbc==4.0.26
 pyOpenSSL==19.0.0
 pyparsing==2.3.1
+PyPDF2==1.26.0
 pyrsistent==0.14.11
 PySocks==1.6.8
 pytest==4.3.1
