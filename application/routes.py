@@ -73,7 +73,7 @@ def transform_view():
 
 			# print(filedata)
 			filedata['filename'] = item.filename
-			filedata.rename(columns=rx_rename, inplace=True)
+			filedata.rename(columns=regex_rename.rx_rename, inplace=True)
 			data = data.append(filedata, ignore_index=True, sort=True)
 
 		# stream.seek(0)
@@ -92,20 +92,53 @@ def transform_view():
 		cgenes = request.form['cgenes']
 		cutoff = request.form.get('cutoff', type=float)
 		max_outliers = request.form.get('max_outliers', type=float)
+		if model == 'relative_ddCT':
+			csample = request.form['csample']
+		elif model == 'instability':
+			csample = request.form['csample']
+		else:
+			csample = ''
 		target_sorter = request.form['target_sorter']
+		print('target_sorter'+target_sorter)
 		sample_sorter = request.form['sample_sorter']
-		csample = request.form['csample']
+		print('sample_sorter' + sample_sorter)
 		colnames = request.form['colnames']
-		qty = request.form.get('quantity', type=int)
+		print('colnames'+colnames)
+		qty = request.form.get('qty', type=int)
 		tw = request.form['twoway']
-		gcol = request.form['gcol']
-		glist = request.form['glist']
-		gcol1 = request.form['gcol1']
-		gcol2 = request.form['gcol2']
-		colname1 = request.form['colname1']
-		colname2 = request.form['colname2']
-		glist1 = request.form['glist1']
-		glist2 = request.form['glist2']
+		if tw == 'False':
+			gcol1 = ''
+			gcol2 = ''
+			colname1 = ''
+			colname2 = ''
+			glist1 = ''
+			glist2 = ''
+			opt_g = request.form['option3']
+			if opt_g == 'True':
+				gcol = request.form['gcol']
+				glist = ''
+			else:
+				glist = request.form['glist']
+				gcol = ''
+		else:
+			gcol = ''
+			glist = ''
+			opt_g = request.form['option3']
+			if opt_g == 'True':
+				gcol1 = request.form['gcol1']
+				gcol2 = request.form['gcol2']
+				colname1 = ''
+				colname2 = ''
+				glist1 = ''
+				glist2 = ''
+			else:
+				colname1 = request.form['colname1']
+				colname2 = request.form['colname2']
+				glist1 = request.form['glist1']
+				glist2 = request.form['glist2']
+				gcol1 = ''
+				gcol2 = ''
+
 		rm = request.form['option2']
 		nd = request.form['option4']
 

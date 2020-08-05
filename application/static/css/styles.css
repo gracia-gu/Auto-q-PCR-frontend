@@ -164,7 +164,15 @@ p {
 }
 
 .btn-primary:hover {
-    background-color: #470A68;
+    background-color: #470A68!important;
+}
+
+.btn-primary:focus {
+    background-color: #2CCCD3!important;
+}
+
+.btn-primary:active {
+    background-color: #470A68!important;
 }
 
 form label.required:after {

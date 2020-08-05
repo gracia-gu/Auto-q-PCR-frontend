@@ -4,6 +4,7 @@ from flask_mail import Mail
 mail = Mail()
 
 app = Flask(__name__)
+
 app.static_folder = 'static'
 app.secret_key = b'6Le3c7oZAAAAADF6jktQ2xuxnb1I1tlODKQwaWxU'
 
@@ -18,8 +19,3 @@ app.config['MAX_CONTENT_LENGTH'] = 200 * 1024 * 1024 # 200MB limit
 mail.init_app(app)
 
 from application import routes
-
-
-if __name__ == '__main__':
-	app.debug = True
-	app.run(host='0.0.0.0', port=5000)

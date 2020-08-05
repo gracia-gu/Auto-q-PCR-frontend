@@ -1,6 +1,6 @@
 import pandas
 import pingouin as pg
-from pingouin import pairwise_ttests, multicomp, ttest, pairwise_tukey
+from pingouin import pairwise_ttests, multicomp, ttest
 from scipy.stats import mannwhitneyu, wilcoxon
 import re
 
@@ -86,8 +86,6 @@ def stats(model, quantity, data, targets, tw, rm, nd):
 						ph = pairwise_ttests(data=data[data['Target Name'].eq(item)], dv=mean, between='Group',
 											 padjust='fdr_bh')
 						ph['Test'] = 'T-Test'
-						# ph_tukey = pairwise_tukey(data=data[data['Target Name'].eq(item)], dv=mean, between='Group')
-						# ph_tukey['Test'] = 'Tukey'
 					# two-way
 					else:
 						aov = pg.anova(dv=mean, between=['Group1', 'Group2'], data=data[data['Target Name'].eq(item)], detailed=False)

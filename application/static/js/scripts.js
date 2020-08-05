@@ -9,13 +9,11 @@ document.getElementById("csample").setAttribute("disabled", "");
 document.getElementById("specialStar").style.display = "none";
 
 document.getElementById("absolute").onclick = function() {
-	document.getElementById("csample").value = "";
 	document.getElementById("csample").setAttribute("disabled", "");
 	document.getElementById("specialStar").style.display = "none";
 };
 
 document.getElementById("relative_dCT").onclick = function() {
-	document.getElementById("csample").value = "";
 	document.getElementById("csample").setAttribute("disabled", "");
 	document.getElementById("specialStar").style.display = "none";
 };
