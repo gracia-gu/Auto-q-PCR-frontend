@@ -71,7 +71,7 @@ def process(data, colnames=None, target_sorter=None, sample_sorter=None):
 	return df, data_output_summary, data_output_summary_w_group, targets, samples
 
 
-def data_sorter(data, target_sorter, sample_sorter):
+def data_sorter(data, target_sorter=None, sample_sorter=None):
 	# define sorter for target name order based on list
 	targets = data['Target Name'].drop_duplicates(keep='first').values
 	if target_sorter != '':

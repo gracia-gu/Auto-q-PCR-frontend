@@ -50,7 +50,6 @@ def stats(model, quantity, data, targets, tw, rm, nd):
 			# ANOVA test
 			stats_dfs = pandas.DataFrame()
 			posthoc_dfs = pandas.DataFrame()
-			# tukey_dfs = pandas.DataFrame()
 			pvals = []
 			for item in targets:
 				if rm == 'True':
