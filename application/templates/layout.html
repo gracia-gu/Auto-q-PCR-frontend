@@ -10,26 +10,28 @@
 </head>
 
 <body>
-    {% include "includes/header.html" %}
+    <div id="top">
+        {% include "includes/header.html" %}
 
-    <div class="container">
-        <div class="row">
-            <div class="col-12 col-sm-8 offset-sm-2">
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }}">
-                                <p>{{ message }}</p>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-sm-8 offset-sm-2">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}">
+                                    <p>{{ message }}</p>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                </div>
             </div>
+
+            {% block content %}
+            {% endblock %}
+
         </div>
-
-        {% block content %}
-        {% endblock %}
-
     </div>
     {% include "includes/footer.html" %}
 

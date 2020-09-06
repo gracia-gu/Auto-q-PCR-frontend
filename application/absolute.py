@@ -3,7 +3,7 @@ import numpy as np
 import re
 
 
-def process(data, colnames=None, target_sorter=None, sample_sorter=None):
+def process(data, colnames, target_sorter, sample_sorter):
 	outlier_data = data[data['Outliers'].eq(True)]
 	data = data[data['Outliers'].eq(False)]
 	# Calculate Mean (Endogenous Control Mean) and SSD for all Controls
@@ -68,10 +68,13 @@ def process(data, colnames=None, target_sorter=None, sample_sorter=None):
 	data_output_summary_w_group = data.groupby(['Target Name', 'Sample Name']+clist, sort=False).agg(
 		{'NormQuant': [np.size , 'mean' , 'std'] , 'NormSEM': 'mean'})
 
+	targets = data['Target Name'].drop_duplicates(keep='first').values
+	samples = data['Sample Name'].drop_duplicates(keep='first').values
+
 	return df, data_output_summary, data_output_summary_w_group, targets, samples
 
 
-def data_sorter(data, target_sorter=None, sample_sorter=None):
+def data_sorter(data, target_sorter, sample_sorter):
 	# define sorter for target name order based on list
 	targets = data['Target Name'].drop_duplicates(keep='first').values
 	if target_sorter != '':

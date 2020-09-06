@@ -6,6 +6,10 @@ header {
     font-family: "CartoGothicStdBold", Helvetica, "Helvetica Neue", Arial, sans serif;
 }
 
+.top {
+    min-height: 100%;
+}
+
 #logo {
     background-color: #ECEFF1;
     height: 100px;

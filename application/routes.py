@@ -37,6 +37,8 @@ def transform_view():
 
 	# try:
 	logger.info('Started')
+	model = request.form['option']
+	logger.info('Model: ' + model + '\n')
 	files = request.files.getlist('file[]')
 	if len(files) == 0:
 		return "No file"
@@ -80,18 +82,16 @@ def transform_view():
 	logger.info('Files upload complete.')
 
 	genes = request.form['genes']
-	logger.info('Gene names if they are included in file names: ' + genes)
-
 	if genes != '':
 		genes = [genes.strip() for genes in genes.split(',')]
 		data['Target Name'] = data['filename'].str.extract(re.compile('(' + '|'.join(genes) + ')', re.IGNORECASE),
-														   expand=False).fillna('')
-	model = request.form['option']
+															   expand=False).fillna('')
 	quencher = request.form['quencher']
 	task = request.form['task']
 	cgenes = request.form['cgenes']
 	cutoff = request.form.get('cutoff', type=float)
 	max_outliers = request.form.get('max_outliers', type=float)
+	preservevar = request.form['preservevar']
 	if model == 'relative_ddCT':
 		csample = request.form['csample']
 	elif model == 'instability':
@@ -139,7 +139,7 @@ def transform_view():
 	rm = request.form['option2']
 	nd = request.form['option4']
 
-	logger.info('Model: ' + model + '\nQuencher: ' + quencher + '\nTask: ' + task + '\nEndogenous control genes: ' +
+	logger.info('Gene names if they are included in file names: ' + genes + '\nQuencher: ' + quencher + '\nTask: ' + task + '\nEndogenous control genes: ' +
 				cgenes + '\nCut-off: ' + str(cutoff) + '\nMaximum Outliers: ' + str(max_outliers) + '\nTarget Order: '
 				+ target_sorter + '\nSample Order: ' + sample_sorter + '\nControl Sample: ' + csample +
 				'\nAdditional column names: ' + colnames + '\nNumber of groups: ' + str(qty) + '\nGroup column name: '
@@ -149,7 +149,7 @@ def transform_view():
 
 	clean_data, summary_data, summary_data_w_group, targets, samples = AUTOqPCR.process_data(data, model, quencher,
 																							 task, cgenes, cutoff,
-																							 max_outliers,
+																							 max_outliers, preservevar,
 																							 target_sorter,
 																							 sample_sorter, csample,
 																							 colnames)
