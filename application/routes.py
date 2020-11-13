@@ -1,5 +1,5 @@
 import logging
-from flask import render_template, request, make_response, flash
+from flask import render_template, request, make_response, send_from_directory, abort, flash
 from flask_mail import Message
 import io
 import pandas as pd
@@ -294,8 +294,16 @@ def transform_view():
 
 
 @app.route('/help')
-def user_guide():
-	return render_template('help.html', user_guide=True)
+def help():
+	return render_template('help.html', help=True)
+
+
+@app.route('/help/<file_name>')
+def get_file(file_name):
+	try:
+		return send_from_directory(app.config['UPLOAD_FOLDER'], filename=file_name, as_attachment=True)
+	except FileNotFoundError:
+		abort(404)
 
 
 @app.route('/contact', methods=['GET', 'POST'])

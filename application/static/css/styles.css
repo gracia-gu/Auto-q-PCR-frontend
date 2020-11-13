@@ -56,6 +56,18 @@ li a.active {
     padding: 20px 0px 20px 0px;
 }
 
+h1 {
+    margin: 2% auto;
+}
+
+#home-content {
+    margin: 3% auto;
+}
+
+#help-page {
+    margin: 3% auto;
+}
+
 .help-tip {
     position: absolute;
     top: -.2em;
