@@ -13,7 +13,7 @@ kiwisolver==1.2.0
 littleutils==0.2.2
 MarkupSafe==1.1.1
 matplotlib==3.3.0
-numpy==1.19.1
+numpy==1.21.0
 outdated==0.2.0
 pandas==1.1.0
 pandas-flavor==0.2.0
